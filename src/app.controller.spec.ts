@@ -1,5 +1,6 @@
 import { BullModule } from '@nestjs/bull';
 import { ValidationPipe } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
 import PrintMeAtSchema from './schemas/print-me-at.schema';
@@ -19,10 +20,13 @@ describe('AppController', () => {
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       imports: [
+        ConfigModule.forRoot({
+          envFilePath: '.env',
+        }),
         BullModule.forRoot({
           redis: {
             host: process.env.REDIS_HOST,
-            port: 6379,
+            port: Number(process.env.REDIS_PORT),
           },
         }),
         BullModule.registerQueue({
@@ -59,15 +63,28 @@ describe('AppController', () => {
         ]);
       }
     });
+
+    it('validate Schema', async () => {
+      try {
+        const printMeAtSchema = new PrintMeAtSchema();
+        await target.transform(printMeAtSchema, {
+          type: 'query',
+          metatype: PrintMeAtSchema,
+        });
+      } catch (err) {
+        expect(err.getResponse().message).toEqual([
+          'message must be a string',
+          'time must be a valid representation of military time in the format HH:MM',
+        ]);
+      }
+    });
   });
 
   describe('printMeAt', () => {
     it('should return "test"', () => {
       expect(appController.printMeAt(printMeAtSchema)).toBe('test');
     });
-  });
 
-  describe('printMeAt', () => {
     it('should catch error "Invalid time"', () => {
       try {
         appController.printMeAt(printMeAtSchemaInvalid);
