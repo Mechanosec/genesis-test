@@ -1,10 +1,22 @@
+import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import MessageConsumerService from './workers/message.consumer';
+import MessageProducerService from './workers/message.producer';
 
 @Module({
-  imports: [],
+  imports: [
+    BullModule.forRoot({
+      redis: {
+        host: process.env.REDIS_HOST,
+        port: 6379,
+      },
+    }),
+    BullModule.registerQueue({
+      name: 'message-queue',
+    }),
+  ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [MessageProducerService, MessageConsumerService],
 })
 export class AppModule {}
