@@ -21,11 +21,7 @@ export class AppController {
       type: 'object',
       example: {
         statusCode: 400,
-        message: [
-          {
-            value: 'string',
-          },
-        ],
+        message: ['some error'],
         error: 'Bad Request',
       },
     },
