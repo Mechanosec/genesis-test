@@ -2,20 +2,21 @@ import { InjectQueue } from '@nestjs/bull';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Queue } from 'bull';
 import PrintMeAtSchema from '../schemas/print-me-at.schema';
+import { MESSAGE } from './workers.constants';
 
 @Injectable()
 export default class MessageProducerService {
-  constructor(@InjectQueue('message-queue') private queue: Queue) {}
+  constructor(@InjectQueue(MESSAGE.QUEUE) private queue: Queue) {}
 
   sendMessage(printMeAtSchema: PrintMeAtSchema) {
     if (!printMeAtSchema.time) {
-      throw new BadRequestException('Invalid time');
+      throw new Error('Invalid time');
     }
 
     const [hour, minute] = printMeAtSchema.time.split(':');
     const delayTime = this.getDelay(Number(hour), Number(minute));
     this.queue.add(
-      'message-job',
+      MESSAGE.JOB,
       {
         text: printMeAtSchema.message,
       },

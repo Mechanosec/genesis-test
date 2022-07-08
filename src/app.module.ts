@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import MessageConsumerService from './workers/message.consumer';
 import MessageProducerService from './workers/message.producer';
+import { MESSAGE } from './workers/workers.constants';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import MessageProducerService from './workers/message.producer';
       },
     }),
     BullModule.registerQueue({
-      name: 'message-queue',
+      name: MESSAGE.QUEUE,
     }),
   ],
   controllers: [AppController],

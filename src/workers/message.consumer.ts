@@ -1,9 +1,10 @@
 import { Process, Processor } from '@nestjs/bull';
 import { Job } from 'bull';
+import { MESSAGE } from './workers.constants';
 
-@Processor('message-queue')
+@Processor(MESSAGE.QUEUE)
 export default class MessageConsumerService {
-  @Process('message-job')
+  @Process(MESSAGE.JOB)
   messageJob(job: Job<unknown>) {
     console.log(job.data);
   }

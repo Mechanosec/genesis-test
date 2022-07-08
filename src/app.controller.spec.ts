@@ -6,6 +6,7 @@ import { AppController } from './app.controller';
 import PrintMeAtSchema from './schemas/print-me-at.schema';
 import MessageConsumerService from './workers/message.consumer';
 import MessageProducerService from './workers/message.producer';
+import { MESSAGE } from './workers/workers.constants';
 
 describe('AppController', () => {
   let appController: AppController;
@@ -30,7 +31,7 @@ describe('AppController', () => {
           },
         }),
         BullModule.registerQueue({
-          name: 'message-queue',
+          name: MESSAGE.QUEUE,
         }),
       ],
       controllers: [AppController],
